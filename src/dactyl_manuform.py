@@ -1,4 +1,3 @@
-from helpers_cadquery import export_file
 import numpy as np
 from numpy import pi
 import math
@@ -835,7 +834,7 @@ def thumb_connectors(side='right', style_override=None):
 def default_thumbcaps():
     t1 = default_thumb_1x_layout(sa_cap(1), cap=True)
     if not shape_config['default_1U_cluster']:
-        t1.helpers.add(default_thumb_15x_layout(sa_cap(1.5), cap=True))
+        t1.add(default_thumb_15x_layout(sa_cap(1.5), cap=True))
     return t1
 
 
@@ -1127,7 +1126,7 @@ def mini_thumb_15x_layout(shape):
 def mini_thumbcaps():
     t1 = mini_thumb_1x_layout(sa_cap(1))
     t15 = mini_thumb_15x_layout(helpers.rotate(sa_cap(1), [0, 0, rad2deg(pi / 2)]))
-    return t1.helpers.add(t15)
+    return t1.add(t15)
 
 
 def mini_thumb(side="right"):
@@ -1354,7 +1353,7 @@ def minidox_thumb_fx_layout(shape):
 
 def minidox_thumbcaps():
     t1 = minidox_thumb_1x_layout(sa_cap(1))
-    # t1.helpers.add(minidox_thumb_15x_layout(helpers.rotate(sa_cap(1), [0, 0, rad2deg(pi / 2)])))
+    # t1.add(minidox_thumb_15x_layout(helpers.rotate(sa_cap(1), [0, 0, rad2deg(pi / 2)])))
     return t1
 
 
@@ -1553,7 +1552,7 @@ def carbonfet_thumb_15x_layout(shape, plate=True):
 def carbonfet_thumbcaps():
     t1 = carbonfet_thumb_1x_layout(sa_cap(1))
     t15 = carbonfet_thumb_15x_layout(helpers.rotate(sa_cap(1.5), [0, 0, rad2deg(pi / 2)]))
-    return t1.helpers.add(t15)
+    return t1.add(t15)
 
 
 def carbonfet_thumb(side="right"):
@@ -1889,7 +1888,7 @@ def trackball_layout(shape):
 
 def tbjs_thumbcaps():
     t1 = tbjs_thumb_1x_layout(sa_cap(1))
-    # t1.helpers.add(tbjs_thumb_15x_layout(helpers.rotate(sa_cap(1), [0, 0, rad2deg(pi / 2)])))
+    # t1.add(tbjs_thumb_15x_layout(helpers.rotate(sa_cap(1), [0, 0, rad2deg(pi / 2)])))
     return t1
 
 
@@ -3937,7 +3936,7 @@ def baseplate(wedge_angle=None, side='right'):
 
         square = cq.Workplane('XY').rect(1000, 1000)
         for wire in square.wires().objects:
-            plane = cq.Workplane('XY').helpers.add(cq.Face.makeFromWires(wire))
+            plane = cq.Workplane('XY').add(cq.Face.makeFromWires(wire))
         shape = helpers.intersect(shape, plane)
 
         outside = shape.vertices(cq.DirectionMinMaxSelector(cq.Vector(1, 0, 0), True)).objects[0]
@@ -3961,11 +3960,11 @@ def baseplate(wedge_angle=None, side='right'):
         debugprint(sizes)
         inner_wire = base_wires[inner_index]
 
-        # inner_plate = cq.Workplane('XY').helpers.add(cq.Face.makeFromWires(inner_wire))
+        # inner_plate = cq.Workplane('XY').add(cq.Face.makeFromWires(inner_wire))
         if wedge_angle is not None:
-            cq.Workplane('XY').helpers.add(cq.Solid.revolve(outerWire, innerWires, angleDegrees, axisStart, axisEnd))
+            cq.Workplane('XY').add(cq.Solid.revolve(outerWire, innerWires, angleDegrees, axisStart, axisEnd))
         else:
-            inner_shape = cq.Workplane('XY').helpers.add(cq.Solid.extrudeLinear(outerWire=inner_wire, innerWires=[], vecNormal=cq.Vector(0, 0, shape_config['base_thickness'])))
+            inner_shape = cq.Workplane('XY').add(cq.Solid.extrudeLinear(outerWire=inner_wire, innerWires=[], vecNormal=cq.Vector(0, 0, shape_config['base_thickness'])))
             inner_shape = helpers.translate(inner_shape, (0, 0, -shape_config['base_rim_thickness']))
 
             holes = []
@@ -3974,7 +3973,7 @@ def baseplate(wedge_angle=None, side='right'):
                     holes.append(base_wires[i])
             cutout = [*holes, inner_wire]
 
-            shape = cq.Workplane('XY').helpers.add(cq.Solid.extrudeLinear(outer_wire, cutout, cq.Vector(0, 0, shape_config['base_rim_thickness'])))
+            shape = cq.Workplane('XY').add(cq.Solid.extrudeLinear(outer_wire, cutout, cq.Vector(0, 0, shape_config['base_rim_thickness'])))
             hole_shapes=[]
             for hole in holes:
                 loc = hole.Center()
@@ -4010,6 +4009,9 @@ def baseplate(wedge_angle=None, side='right'):
 def export_file(shape, part_name):
     helpers.export_file(shape=shape, fname=path.join(save_path, shape_config['config_name'] + '_' + part_name))
 
+def export_dxf(shape, part_name):
+    helpers.export_file(shape=shape, fname=path.join(save_path, shape_config['config_name'] + '_' + part_name))
+
 def run(opts):
     setup(opts)
 
@@ -4018,7 +4020,7 @@ def run(opts):
 
     base = baseplate(side='right')
     export_file(shape=base, part_name=r"right_plate")
-    helpers.export_dxf(shape=base, part_name=r"right_plate")
+    export_dxf(shape=base, part_name=r"right_plate")
 
     if shape_config['symmetry'] == "asymmetric":
         mod_l = model_side(side="left")
@@ -4026,14 +4028,14 @@ def run(opts):
 
         base_l = helpers.mirror(baseplate(side='left'), 'YZ')
         export_file(shape=base_l, part_name=r"left_plate")
-        helpers.export_dxf(shape=base_l, part_name=r"left_plate")
+        export_dxf(shape=base_l, part_name=r"left_plate")
 
     else:
         export_file(shape=helpers.mirror(mod_r, 'YZ'), part_name=r"left")
 
         lbase = helpers.mirror(base, 'YZ')
         export_file(shape=lbase, part_name=r"left_plate")
-        helpers.export_dxf(shape=lbase, part_name=r"left_plate")
+        export_dxf(shape=lbase, part_name=r"left_plate")
 
 
 
