@@ -53,6 +53,7 @@ while [ "$(docker inspect --format={{.State.Status}} dm-run)" != 'exited' ]; do
     echo -n "."
     sleep 1.5
 done
+echo ""
 
 # display the output of run.py
 docker logs dm-run
