@@ -3821,22 +3821,22 @@ def model_side(side="right"):
     print('model_right()')
     shape = helpers.union([key_holes(side=side)])
     if debug_exports:
-        helpers.export_file(shape=shape, fname=path.join(r"..", "things", r"debug_key_plates"))
+        export_file(shape=shape, part_name=r"debug_key_plates")
     connector_shape = connectors()
     shape = helpers.union([shape, connector_shape])
     if debug_exports:
-        helpers.export_file(shape=shape, fname=path.join(r"..", "things", r"debug_connector_shape"))
+        export_file(shape=shape, part_name=r"debug_connector_shape")
     thumb_shape = thumb(side=side)
     if debug_exports:
-        helpers.export_file(shape=thumb_shape, fname=path.join(r"..", "things", r"debug_thumb_shape"))
+        export_file(shape=thumb_shape, part_name=r"debug_thumb_shape")
     shape = helpers.union([shape, thumb_shape])
     thumb_connector_shape = thumb_connectors(side=side)
     shape = helpers.union([shape, thumb_connector_shape])
     if debug_exports:
-        helpers.export_file(shape=shape, fname=path.join(r"..", "things", r"debug_thumb_connector_shape"))
+        export_file(shape=shape, part_name=r"debug_thumb_connector_shape")
     walls_shape = case_walls(side=side)
     if debug_exports:
-        helpers.export_file(shape=walls_shape, fname=path.join(r"..", "things", r"debug_walls_shape"))
+        export_file(shape=walls_shape, part_name=r"debug_walls_shape")
     s2 = helpers.union([walls_shape])
     s2 = helpers.union([s2, *screw_insert_outers(side=side)])
 
@@ -3881,12 +3881,12 @@ def model_side(side="right"):
         tbprecut, tb, tbcutout, sensor, ball = generate_trackball_in_wall()
 
         shape = helpers.difference(shape, [tbprecut])
-        # helpers.export_file(shape=shape, fname=path.join(save_path, config_name + r"_test_1"))
+        # export_file(shape=shape, part_name=r"_test_1")
         shape = helpers.union([shape, tb])
-        # helpers.export_file(shape=shape, fname=path.join(save_path, config_name + r"_test_2"))
+        # export_file(shape=shape, part_name=r"_test_2")
         shape = helpers.difference(shape, [tbcutout])
-        # helpers.export_file(shape=shape, fname=path.join(save_path, config_name + r"_test_3a"))
-        # helpers.export_file(shape=helpers.add([shape, sensor]), fname=path.join(save_path, config_name + r"_test_3b"))
+        # export_file(shape=shape, part_name=r"_test_3a")
+        # export_file(shape=helpers.add([shape, sensor]), part_name=r"_test_3b")
         shape = helpers.union([shape, sensor])
 
         if shape_config['show_caps']:
@@ -3896,12 +3896,12 @@ def model_side(side="right"):
         tbprecut, tb, tbcutout, sensor, ball = generate_trackball_in_cluster()
 
         shape = helpers.difference(shape, [tbprecut])
-        # helpers.export_file(shape=shape, fname=path.join(save_path, config_name + r"_test_1"))
+        # export_file(shape=shape, part_name=r"_test_1")
         shape = helpers.union([shape, tb])
-        # helpers.export_file(shape=shape, fname=path.join(save_path, config_name + r"_test_2"))
+        # export_file(shape=shape, part_name=r"_test_2")
         shape = helpers.difference(shape, [tbcutout])
-        # helpers.export_file(shape=shape, fname=path.join(save_path, config_name + r"_test_3a"))
-        # helpers.export_file(shape=helpers.add([shape, sensor]), fname=path.join(save_path, config_name + r"_test_3b"))
+        # export_file(shape=shape, part_name=r"_test_3a")
+        # export_file(shape=helpers.add([shape, sensor]), part_name=r"_test_3b")
         shape = helpers.union([shape, sensor])
 
         if shape_config['show_caps']:
@@ -4007,48 +4007,45 @@ def baseplate(wedge_angle=None, side='right'):
 
         return sl.projection(cut=True)(shape)
 
+def export_file(shape, part_name):
+    helpers.export_file(shape=shape, fname=path.join(save_path, shape_config['config_name'] + '_' + part_name))
+
 def run(opts):
     setup(opts)
 
     mod_r = model_side(side="right")
-    helpers.export_file(shape=mod_r, fname=path.join(save_path, opts['config']['name'] + r"_right"))
+    export_file(shape=mod_r, part_name=r"right")
 
     base = baseplate(side='right')
-    helpers.export_file(shape=base, fname=path.join(save_path, opts['config']['name'] + r"_right_plate"))
-    helpers.export_dxf(shape=base, fname=path.join(save_path, opts['config']['name'] + r"_right_plate"))
+    export_file(shape=base, part_name=r"right_plate")
+    helpers.export_dxf(shape=base, part_name=r"right_plate")
 
     if shape_config['symmetry'] == "asymmetric":
         mod_l = model_side(side="left")
-        helpers.export_file(shape=mod_l, fname=path.join(save_path, opts['config']['name'] + r"_left"))
+        export_file(shape=mod_l, part_name=r"left")
 
         base_l = helpers.mirror(baseplate(side='left'), 'YZ')
-        helpers.export_file(shape=base_l, fname=path.join(save_path, opts['config']['name'] + r"_left_plate"))
-        helpers.export_dxf(shape=base_l, fname=path.join(save_path, opts['config']['name'] + r"_left_plate"))
+        export_file(shape=base_l, part_name=r"left_plate")
+        helpers.export_dxf(shape=base_l, part_name=r"left_plate")
 
     else:
-        helpers.export_file(shape=helpers.mirror(mod_r, 'YZ'), fname=path.join(save_path, opts['config']['name'] + r"_left"))
+        export_file(shape=helpers.mirror(mod_r, 'YZ'), part_name=r"left")
 
         lbase = helpers.mirror(base, 'YZ')
-        helpers.export_file(shape=lbase, fname=path.join(save_path, opts['config']['name'] + r"_left_plate"))
-        helpers.export_dxf(shape=lbase, fname=path.join(save_path, opts['config']['name'] + r"_left_plate"))
-
+        export_file(shape=lbase, part_name=r"left_plate")
+        helpers.export_dxf(shape=lbase, part_name=r"left_plate")
 
 
 
     if shape_config['oled_mount_type'] == 'UNDERCUT':
-        helpers.export_file(shape=oled_undercut_mount_frame()[1], fname=path.join(save_path, opts['config']['name'] + r"_oled_undercut_test"))
+        export_file(shape=oled_undercut_mount_frame()[1], part_name=r"oled_undercut_test")
 
     if shape_config['oled_mount_type'] == 'SLIDING':
-        helpers.export_file(shape=oled_sliding_mount_frame()[1], fname=path.join(save_path, opts['config']['name'] + r"_oled_sliding_test"))
+        export_file(shape=oled_sliding_mount_frame()[1], part_name=r"oled_sliding_test")
 
     if shape_config['oled_mount_type'] == 'CLIP':
         oled_mount_location_xyz = (0.0, 0.0, -shape_config['oled_mount_depth'] / 2)
         oled_mount_rotation_xyz = (0.0, 0.0, 0.0)
-        helpers.export_file(shape=oled_clip(), fname=path.join(save_path, opts['config']['name'] + r"_oled_clip"))
-        helpers.export_file(shape=oled_clip_mount_frame()[1],
-                            fname=path.join(save_path, opts['config']['name'] + r"_oled_clip_test"))
-        helpers.export_file(shape=helpers.union((oled_clip_mount_frame()[1], oled_clip())),
-                            fname=path.join(save_path, opts['config']['name'] + r"_oled_clip_assy_test"))
-
-# base = baseplate()
-# helpers.export_file(shape=base, fname=path.join(save_path, opts['config']['name'] + r"_plate"))
+        export_file(shape=oled_clip(), part_name=r"oled_clip")
+        export_file(shape=oled_clip_mount_frame()[1], part_name=r"oled_clip_test")
+        export_file(shape=helpers.union((oled_clip_mount_frame()[1], oled_clip())), part_name=r"oled_clip_assy_test")
