@@ -1,3 +1,4 @@
+from helpers_cadquery import export_file
 import numpy as np
 from numpy import pi
 import math
@@ -8,7 +9,7 @@ import os
 from . import default_configuration
 from scipy.spatial import ConvexHull as sphull
 import solid as sl
-
+import cadquery as cq
 
 debug_exports = False
 debug_trace = False
@@ -3921,6 +3922,7 @@ def model_side(side="right"):
 
 
 # NEEDS TO BE SPECIAL FOR CADQUERY
+# todo: refactor so this file doesn't need to import solid/cadquery
 def baseplate(wedge_angle=None, side='right'):
     if shape_config['ENGINE'] == 'cadquery':
         # shape = mod_r
