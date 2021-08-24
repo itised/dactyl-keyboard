@@ -3148,9 +3148,9 @@ def rj9_space():
 
 def rj9_holder():
     print('rj9_holder()')
-    shape = helpers.union([helpers.translate(box(10.78, 9, 18.38), (0, 2, 0)), helpers.translate(box(10.78, 13, 5), (0, 0, 5))])
+    shape = helpers.union([helpers.translate(helpers.box(10.78, 9, 18.38), (0, 2, 0)), helpers.translate(helpers.box(10.78, 13, 5), (0, 0, 5))])
     shape = helpers.difference(rj9_cube(), [shape])
-    shape = helpers.translate(shape, rj9_position)
+    shape = helpers.translate(shape, shape_config['rj9_position'])
 
     return shape
 
